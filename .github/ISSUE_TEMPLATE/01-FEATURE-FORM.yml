@@ -1,0 +1,96 @@
+name: Solicitud de Funcionalidad
+description: Envía una propuesta para una nueva funcionalidad o mejora.
+title: "[feat]: "
+labels: [enhancement]
+assignees:
+  - ${{ github.actor }} # Asigna automáticamente al creador del formulario
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🚀 Formulario de Solicitud de Funcionalidad
+        Completa este formulario siguiendo las buenas prácticas de desarrollo ágil.
+
+  - type: input
+    id: feature-summary
+    attributes:
+      label: 📌 Resumen de la Funcionalidad
+      placeholder: "Ej: Añadir modo oscuro en la configuración de usuario"
+      description: |
+        Describe brevemente la funcionalidad que estás solicitando.
+
+  - type: textarea
+    id: problem-statement
+    attributes:
+      label: 🔍 Problema o Necesidad
+      description: |
+        ¿Qué problema estás tratando de resolver con esta funcionalidad?
+      placeholder: |
+        Ej: Los usuarios que trabajan de noche encuentran la interfaz muy brillante, causando molestias visuales.
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance-criteria
+    attributes:
+      label: ✅ Criterios de Aceptación
+      description: |
+        Lista las condiciones que deben cumplirse para considerar la funcionalidad como completada.  
+        Para más información, revisa [Acceptance Criteria – Atlassian](https://www.atlassian.com/agile/project-management/user-stories#Acceptance-criteria) (Haz clic derecho para abrir en una nueva pestaña).
+      placeholder: |
+        - [ ] AC1: Hay un interruptor visible en la configuración
+        - [ ] AC2: . . .
+    validations:
+      required: true
+
+  - type: textarea
+    id: steps-to-reproduce
+    attributes:
+      label: 🪜 Pasos para Reproducir, probar o verificar (si aplica)
+      description: |
+        Si la solicitud mejora o corrige un comportamiento, proporciona pasos detallados para reproducirlo.
+      placeholder: |
+        1. Ir a configuración  
+        2. Observar que no existe una opción para activar el modo oscuro
+    validations:
+      required: false
+
+  - type: textarea
+    id: business-value
+    attributes:
+      label: 💡 Valor para el Negocio / Impacto en el Usuario
+      description: |
+        Explica el valor que aporta esta funcionalidad.
+      placeholder: |
+        Mejora la accesibilidad y reduce la fatiga visual en entornos con poca luz.
+    validations:
+      required: false
+
+  - type: textarea
+    id: screenshots
+    attributes:
+      label: 🖼️ Capturas de Pantalla / Mockups
+      description: |
+        Añade imágenes o referencias visuales para mayor claridad.
+      placeholder: "Arrastra aquí las imágenes o pega enlaces a mockups."
+    validations:
+      required: false
+
+  - type: textarea
+    id: additional-context
+    attributes:
+      label: 📎 Contexto Adicional
+      description: |
+        Proporciona cualquier otra información relevante o vínculos relacionados.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: definition-of-ready
+    attributes:
+      label: 🧾 Confirmación de la Definición de Listo (DoR)
+      description: |
+        Por favor, confirma que esta solicitud cumple con nuestra DoR
+      options:
+        - label: Confirmo que esta funcionalidad cumple con la Definición de Listo y contiene suficiente detalle para ser estimada e implementada.
+          required: false
