@@ -1,0 +1,261 @@
+# ====================
+# Flutter & Dart
+# ====================
+# Archivos de build y compilación
+**/build/
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+pubspec.lock
+
+# Archivos de cache y generados
+*.g.dart
+*.freezed.dart
+*.gr.dart
+*.config.dart
+*.mocks.dart
+lib/generated/
+lib/**/*.g.dart
+
+# ====================
+# Archivos del Sistema Operativo
+# ====================
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ====================
+# IDEs y Editores
+# ====================
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# IntelliJ IDEA / Android Studio
+.idea/
+*.iml
+*.ipr
+*.iws
+.idea_modules/
+out/
+.gradle/
+local.properties
+captures/
+.externalNativeBuild
+.cxx
+
+# Xcode
+*.pbxuser
+!default.pbxuser
+*.mode1v3
+!default.mode1v3
+*.mode2v3
+!default.mode2v3
+*.perspectivev3
+!default.perspectivev3
+xcuserdata/
+*.xccheckout
+*.moved-aside
+DerivedData/
+*.hmap
+*.ipa
+*.xcuserstate
+ios/.symlinks/
+ios/Flutter/App.framework
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+ios/Flutter/Generated.xcconfig
+ios/Flutter/app.flx
+ios/Flutter/app.zip
+ios/Flutter/flutter_assets/
+ios/Flutter/flutter_export_environment.sh
+ios/ServiceDefinitions.json
+ios/Runner/GeneratedPluginRegistrant.*
+
+# ====================
+# Variables de Entorno y Secretos
+# ====================
+.env
+.env.*
+!.env.example
+*.env
+.envrc
+secrets.yaml
+firebase_options.dart
+google-services.json
+GoogleService-Info.plist
+key.properties
+keystore.properties
+*.keystore
+*.jks
+service-account.json
+credentials.json
+
+# ====================
+# Certificados y Llaves
+# ====================
+*.pem
+*.key
+*.cert
+*.crt
+*.p12
+*.pfx
+*.mobileprovision
+*.certSigningRequest
+
+# ====================
+# Logs y Bases de Datos
+# ====================
+*.log
+logs/
+*.sql
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+
+# ====================
+# Archivos Temporales
+# ====================
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*.cache
+tmp/
+temp/
+
+# ====================
+# Cobertura de Tests
+# ====================
+coverage/
+.test_coverage.dart
+test/.test_coverage.dart
+lcov.info
+*.lcov
+
+# ====================
+# Dependencias y Paquetes
+# ====================
+node_modules/
+.packages
+.pub/
+pubspec.lock
+ios/Pods/
+ios/Podfile.lock
+ios/.symlinks/
+android/.gradle/
+.flutter-plugins-dependencies
+
+# ====================
+# Archivos Grandes o Binarios
+# ====================
+*.so
+*.dylib
+*.dll
+*.exe
+*.apk
+*.aab
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.zip
+*.tar.gz
+*.rar
+*.7z
+*.dmg
+*.iso
+
+# ====================
+# Carpetas de Uploads o Contenido de Usuario
+# ====================
+uploads/
+user_data/
+storage/
+media/
+assets/uploads/
+
+# ====================
+# Backups y Versiones Antiguas
+# ====================
+*.backup
+*.old
+*-old
+*-backup
+*.bak.*
+backup/
+backups/
+
+# ====================
+# Firebase
+# ====================
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+database-debug.log
+
+# ====================
+# Android específico
+# ====================
+android/app/debug
+android/app/profile
+android/app/release
+android/.gradle
+android/gradle
+android/gradlew
+android/gradlew.bat
+android/local.properties
+android/key.properties
+android/**/GeneratedPluginRegistrant.java
+
+# ====================
+# Otros
+# ====================
+.metadata
+.flutter-plugins
+.flutter-plugins-dependencies
+.fvm/
+.tool-versions
+analysis_options.yaml.old
