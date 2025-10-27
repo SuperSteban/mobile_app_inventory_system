@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 
 import '../../domain/entities/product.dart';
 import '../providers/product_provider.dart';
+import 'product_view_screen.dart'; // Asegúrate de importar la vista
 
 class ProductFormScreen extends StatefulWidget {
   const ProductFormScreen({Key? key}) : super(key: key);
@@ -19,10 +20,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final _priceController = TextEditingController();
   final _stockController = TextEditingController();
   final _minStockController = TextEditingController();
-  final _storageLocationController = TextEditingController();
   final _codeProductController = TextEditingController();
 
   String _selectedCategory = 'general';
+  String _selectedStorageLocation = 'ABARROTES';
   File? _selectedImage;
 
   @override
@@ -50,7 +51,6 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     final price = double.tryParse(_priceController.text.trim()) ?? 0;
     final stock = double.tryParse(_stockController.text.trim()) ?? 0;
     final minStock = double.tryParse(_minStockController.text.trim()) ?? 0;
-    final storageLocation = _storageLocationController.text.trim();
     final codeProduct = _codeProductController.text.trim();
 
     if (name.isEmpty || price <= 0 || codeProduct.isEmpty) {
@@ -84,7 +84,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       img: _selectedImage?.path,
       stock: stock,
       minStock: minStock,
-      storageLocation: storageLocation.isEmpty ? null : storageLocation,
+      storageLocation: _selectedStorageLocation,
       codeProduct: codeProduct,
       createdAt: DateTime.now(),
       updatedAt: null,
@@ -99,11 +99,11 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     _priceController.clear();
     _stockController.clear();
     _minStockController.clear();
-    _storageLocationController.clear();
     _codeProductController.clear();
 
     setState(() {
       _selectedCategory = 'general';
+      _selectedStorageLocation = 'ABARROTES';
       _selectedImage = null;
     });
   }
@@ -113,129 +113,116 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     final provider = Provider.of<ProductProvider>(context);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Gestión de Productos')),
+      appBar: AppBar(title: const Text('Agregar Producto')),
       body: provider.isLoading
           ? const Center(child: CircularProgressIndicator())
           : Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  if (provider.error != null)
-                    Text(
-                      provider.error!,
-                      style: const TextStyle(color: Colors.red),
-                    ),
-                  TextField(
-                    controller: _nameController,
-                    decoration: const InputDecoration(
-                      labelText: 'Nombre del producto',
-                    ),
-                  ),
-                  TextField(
-                    controller: _priceController,
-                    decoration: const InputDecoration(labelText: 'Precio'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  TextField(
-                    controller: _stockController,
-                    decoration: const InputDecoration(labelText: 'Stock'),
-                    keyboardType: TextInputType.number,
-                  ),
-                  TextField(
-                    controller: _minStockController,
-                    decoration: const InputDecoration(
-                      labelText: 'Stock mínimo',
-                    ),
-                    keyboardType: TextInputType.number,
-                  ),
-                  TextField(
-                    controller: _storageLocationController,
-                    decoration: const InputDecoration(
-                      labelText: 'Ubicación de almacenamiento',
-                    ),
-                  ),
-                  TextField(
-                    controller: _codeProductController,
-                    decoration: const InputDecoration(
-                      labelText: 'Código de barras',
-                    ),
-                  ),
-                  DropdownButton<String>(
-                    value: _selectedCategory,
-                    items: ['general', 'abarrotes', 'carnes', 'pollo', 'pan']
-                        .map(
-                          (cat) =>
-                              DropdownMenuItem(value: cat, child: Text(cat)),
-                        )
-                        .toList(),
-                    onChanged: (value) {
-                      if (value != null)
-                        setState(() => _selectedCategory = value);
-                    },
-                  ),
-                  const SizedBox(height: 10),
-                  TextButton.icon(
-                    onPressed: _pickImage,
-                    icon: const Icon(Icons.image),
-                    label: const Text('Seleccionar imagen'),
-                  ),
-                  if (_selectedImage != null)
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 8.0),
-                      child: Image.file(
-                        _selectedImage!,
-                        height: 150,
-                        fit: BoxFit.cover,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    if (provider.error != null)
+                      Text(
+                        provider.error!,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    TextField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(
+                        labelText: 'Nombre del producto',
                       ),
                     ),
-                  ElevatedButton(
-                    onPressed: _submitProduct,
-                    child: const Text('Agregar producto'),
-                  ),
-                  const Divider(),
-                  Expanded(
-                    child: provider.products.isEmpty
-                        ? const Center(
-                            child: Text('No hay productos registrados'),
+                    TextField(
+                      controller: _priceController,
+                      decoration: const InputDecoration(labelText: 'Precio'),
+                      keyboardType: TextInputType.number,
+                    ),
+                    TextField(
+                      controller: _stockController,
+                      decoration: const InputDecoration(labelText: 'Stock'),
+                      keyboardType: TextInputType.number,
+                    ),
+                    TextField(
+                      controller: _minStockController,
+                      decoration: const InputDecoration(
+                        labelText: 'Stock mínimo',
+                      ),
+                      keyboardType: TextInputType.number,
+                    ),
+                    DropdownButtonFormField<String>(
+                      value: _selectedStorageLocation,
+                      decoration: const InputDecoration(
+                        labelText: 'Ubicación de almacenamiento',
+                      ),
+                      items: ['ABARROTES', 'CUARTO FRÍO', 'NO PERECEDEROS']
+                          .map(
+                            (loc) =>
+                                DropdownMenuItem(value: loc, child: Text(loc)),
                           )
-                        : ListView.builder(
-                            itemCount: provider.products.length,
-                            itemBuilder: (_, index) {
-                              final product = provider.products[index];
-                              return ListTile(
-                                title: Text(product.name),
-                                subtitle: Text(
-                                  '${product.category} - \$${product.price.toStringAsFixed(2)}',
-                                ),
-                                trailing: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      product.createdAt
-                                          .toLocal()
-                                          .toString()
-                                          .split(' ')[0],
-                                    ),
-                                    if (product.isOutOfStock)
-                                      const Text(
-                                        'Agotado',
-                                        style: TextStyle(color: Colors.red),
-                                      ),
-                                    if (!product.isOutOfStock &&
-                                        product.isLowStock)
-                                      const Text(
-                                        'Stock bajo',
-                                        style: TextStyle(color: Colors.orange),
-                                      ),
-                                  ],
-                                ),
-                              );
-                            },
-                          ),
-                  ),
-                ],
+                          .toList(),
+                      onChanged: (value) {
+                        if (value != null)
+                          setState(() => _selectedStorageLocation = value);
+                      },
+                    ),
+                    TextField(
+                      controller: _codeProductController,
+                      decoration: const InputDecoration(
+                        labelText: 'Código de barras',
+                      ),
+                    ),
+                    DropdownButton<String>(
+                      value: _selectedCategory,
+                      items: ['general', 'abarrotes', 'carnes', 'pollo', 'pan']
+                          .map(
+                            (cat) =>
+                                DropdownMenuItem(value: cat, child: Text(cat)),
+                          )
+                          .toList(),
+                      onChanged: (value) {
+                        if (value != null)
+                          setState(() => _selectedCategory = value);
+                      },
+                    ),
+                    const SizedBox(height: 10),
+                    TextButton.icon(
+                      onPressed: _pickImage,
+                      icon: const Icon(Icons.image),
+                      label: const Text('Seleccionar imagen'),
+                    ),
+                    if (_selectedImage != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8.0),
+                        child: Image.file(
+                          _selectedImage!,
+                          height: 150,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ElevatedButton(
+                      onPressed: _submitProduct,
+                      child: const Text('Agregar producto'),
+                    ),
+                  ],
+                ),
               ),
             ),
+      floatingActionButton: Align(
+        alignment: Alignment.bottomLeft,
+        child: Padding(
+          padding: const EdgeInsets.only(left: 32.0, bottom: 16.0),
+          child: FloatingActionButton.extended(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (_) => const ProductViewScreen()),
+              );
+            },
+            icon: const Icon(Icons.storage),
+            label: const Text('STORAGE'),
+          ),
+        ),
+      ),
     );
   }
 }
