@@ -15,7 +15,8 @@ class ProductProvider with ChangeNotifier {
     required this.repository,
   });
 
-  List<Product> _products = [];
+  List<Product> _allProducts = []; // 🔹 Lista completa
+  List<Product> _products = []; // 🔹 Lista filtrada
   bool _isLoading = false;
   String? _error;
 
@@ -25,6 +26,7 @@ class ProductProvider with ChangeNotifier {
 
   Future<void> createProduct(Product product) async {
     await addProductCase(product);
+    _allProducts.add(product);
     _products.add(product);
     notifyListeners();
   }
@@ -33,7 +35,8 @@ class ProductProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
-      _products = await getProductsCase();
+      _allProducts = await getProductsCase();
+      _products = List.from(_allProducts); // 🔹 Inicializa con todos
       _error = null;
     } catch (e) {
       _error = e.toString();
@@ -44,5 +47,14 @@ class ProductProvider with ChangeNotifier {
 
   Future<bool> isDuplicateCode(String codeProduct) async {
     return await repository.existsCodeProduct(codeProduct);
+  }
+
+  void filterProducts({String? storage, String? category}) {
+    _products = _allProducts.where((p) {
+      final matchStorage = storage == null || p.storageLocation == storage;
+      final matchCategory = category == null || p.category == category;
+      return matchStorage && matchCategory;
+    }).toList();
+    notifyListeners();
   }
 }
