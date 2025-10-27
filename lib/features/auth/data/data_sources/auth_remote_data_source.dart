@@ -17,7 +17,6 @@ abstract class AuthRemoteDataSource {
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final fb_auth.FirebaseAuth firebaseAuth;
 
-  // FIX 1: Added semicolon (;) to the constructor.
   const AuthRemoteDataSourceImpl({required this.firebaseAuth});
 
   @override
@@ -25,12 +24,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     required String email,
     required String password,
   }) async {
-    // Note: No try-catch here! Let the exception propagate to the Repository.
     final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
-    // Returns the Firebase object
     return userCredential;
   }
 

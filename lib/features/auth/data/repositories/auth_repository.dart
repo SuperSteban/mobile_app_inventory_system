@@ -8,9 +8,6 @@ import 'package:mobile_app_inventory_system/features/auth/domain/repositories/au
 import '../../../../core/error/firebase_trans_errors.dart';
 import '../data_sources/auth_remote_data_source.dart';
 
-// ASUMO que tienes esta función de traducción implementada en un archivo helper de Data.
-// Si no existe, ver la sección de Implementación Requerida.
-
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
 
@@ -18,10 +15,6 @@ class AuthRepositoryImpl implements AuthRepository {
     required this.remoteDataSource,
   });
 
-
-  // **********************************************
-  // DA-05: Implementación de signIn
-  // **********************************************
   @override
   Future<Either<Failure, void>> signIn({required String email, required String password}) async {
     try {
@@ -31,14 +24,10 @@ class AuthRepositoryImpl implements AuthRepository {
     } on FirebaseAuthException catch (e) {
       return translateFirebaseAuthException(e);
     } catch (e) {
-      // 3. Captura cualquier otra excepción no mapeada.
       return Left(ServerFailure(e.toString()));
     }
   }
 
-  // **********************************************
-  // DA-05: Implementación de signUp
-  // **********************************************
   @override
   Future<Either<Failure, UserEntity>> signUp({required String email, required String password}) async {
     try {
@@ -54,9 +43,6 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-  // **********************************************
-  // DA-05: Implementación de signOut
-  // **********************************************
   @override
   Future<Either<Failure, void>> signOut() async {
     try {
