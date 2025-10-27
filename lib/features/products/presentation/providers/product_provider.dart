@@ -24,6 +24,7 @@ class ProductProvider with ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
+  /// 🔹 Crear producto
   Future<void> createProduct(Product product) async {
     await addProductCase(product);
     _allProducts.add(product);
@@ -31,12 +32,13 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// 🔹 Obtener productos
   Future<void> fetchProducts() async {
     _isLoading = true;
     notifyListeners();
     try {
       _allProducts = await getProductsCase();
-      _products = List.from(_allProducts); // 🔹 Inicializa con todos
+      _products = List.from(_allProducts); // Inicializa con todos
       _error = null;
     } catch (e) {
       _error = e.toString();
@@ -45,10 +47,12 @@ class ProductProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  /// 🔹 Validar código duplicado
   Future<bool> isDuplicateCode(String codeProduct) async {
     return await repository.existsCodeProduct(codeProduct);
   }
 
+  /// 🔹 Filtrar productos por almacén y categoría
   void filterProducts({String? storage, String? category}) {
     _products = _allProducts.where((p) {
       final matchStorage = storage == null || p.storageLocation == storage;
@@ -56,5 +60,18 @@ class ProductProvider with ChangeNotifier {
       return matchStorage && matchCategory;
     }).toList();
     notifyListeners();
+  }
+
+  /// 🔹 Eliminar producto
+  Future<void> deleteProduct(String id) async {
+    try {
+      await repository.deleteProduct(id); // Elimina en Firestore
+      _allProducts.removeWhere((p) => p.id == id);
+      _products.removeWhere((p) => p.id == id);
+      notifyListeners();
+    } catch (e) {
+      _error = 'Error al eliminar: ${e.toString()}';
+      notifyListeners();
+    }
   }
 }

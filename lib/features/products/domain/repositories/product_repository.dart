@@ -4,7 +4,5 @@ abstract class ProductRepository {
   Future<void> addProduct(Product product);
   Future<List<Product>> getProducts();
   Future<bool> existsCodeProduct(String codeProduct);
+  Future<void> deleteProduct(String id);
 }
-
-
-//después agregaremos mas funcionalidades como update o delete, por el momento es puro create an show o list 

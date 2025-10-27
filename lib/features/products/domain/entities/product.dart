@@ -83,6 +83,7 @@ class Product {
     String? codeProduct,
     DateTime? createdAt,
     DateTime? updatedAt,
+    String? unit,
   }) {
     return Product(
       id: id ?? this.id,
@@ -96,7 +97,7 @@ class Product {
       codeProduct: codeProduct ?? this.codeProduct,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      unit: unit,
+      unit: unit ?? this.unit,
     );
   }
 }

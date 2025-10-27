@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_app_inventory_system/features/products/presentation/screens/product_edit_screen.dart';
 import 'package:provider/provider.dart';
 import '../providers/product_provider.dart';
 
@@ -33,6 +34,56 @@ class _ProductViewScreenState extends State<ProductViewScreen> {
     );
   }
 
+  Future<void> _confirmDelete(
+    ProductProvider provider,
+    String productId,
+    String productName,
+  ) async {
+    final confirm =
+        await showDialog<bool>(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text('¿Eliminar producto?'),
+            content: Text(
+              '¿Deseas eliminar "$productName"? Esta acción no se puede deshacer.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: const Text('Cancelar'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.pop(context, true),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                child: const Text('Eliminar'),
+              ),
+            ],
+          ),
+        ) ??
+        false;
+
+    if (!confirm) return;
+
+    try {
+      await provider.deleteProduct(productId);
+      await provider.fetchProducts();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Producto eliminado'),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error al eliminar: $e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final provider = Provider.of<ProductProvider>(context);
@@ -54,7 +105,7 @@ class _ProductViewScreenState extends State<ProductViewScreen> {
                   child: Row(
                     children: [
                       Expanded(
-                        child: DropdownButtonFormField<String>(
+                        child: DropdownButtonFormField<String?>(
                           value: selectedStorage,
                           decoration: const InputDecoration(
                             labelText: 'Almacén',
@@ -62,7 +113,7 @@ class _ProductViewScreenState extends State<ProductViewScreen> {
                           ),
                           items: [null, ...storageOptions]
                               .map(
-                                (loc) => DropdownMenuItem(
+                                (loc) => DropdownMenuItem<String?>(
                                   value: loc,
                                   child: Text(loc ?? 'Todos'),
                                 ),
@@ -76,7 +127,7 @@ class _ProductViewScreenState extends State<ProductViewScreen> {
                       ),
                       const SizedBox(width: 9),
                       Expanded(
-                        child: DropdownButtonFormField<String>(
+                        child: DropdownButtonFormField<String?>(
                           value: selectedCategory,
                           decoration: const InputDecoration(
                             labelText: 'Categoría',
@@ -84,7 +135,7 @@ class _ProductViewScreenState extends State<ProductViewScreen> {
                           ),
                           items: [null, ...categoryOptions]
                               .map(
-                                (cat) => DropdownMenuItem(
+                                (cat) => DropdownMenuItem<String?>(
                                   value: cat,
                                   child: Text(cat ?? 'Todas'),
                                 ),
@@ -249,17 +300,44 @@ class _ProductViewScreenState extends State<ProductViewScreen> {
                                           ],
                                         ),
                                         const SizedBox(height: 8),
-                                        Align(
-                                          alignment: Alignment.centerRight,
-                                          child: TextButton.icon(
-                                            onPressed: () {
-                                              // Navegar a ProductDetailScreen
-                                            },
-                                            icon: const Icon(
-                                              Icons.info_outline,
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.end,
+                                          children: [
+                                            TextButton.icon(
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (_) =>
+                                                        ProductEditScreen(
+                                                          product: product,
+                                                        ),
+                                                  ),
+                                                ).then(
+                                                  (_) =>
+                                                      provider.fetchProducts(),
+                                                );
+                                              },
+                                              icon: const Icon(Icons.edit),
+                                              label: const Text('Actualizar'),
                                             ),
-                                            label: const Text('Ver detalles'),
-                                          ),
+                                            const SizedBox(width: 8),
+                                            TextButton.icon(
+                                              style: TextButton.styleFrom(
+                                                foregroundColor: Colors.red,
+                                              ),
+                                              onPressed: () => _confirmDelete(
+                                                provider,
+                                                product.id,
+                                                product.name,
+                                              ),
+                                              icon: const Icon(
+                                                Icons.delete_forever,
+                                              ),
+                                              label: const Text('Eliminar'),
+                                            ),
+                                          ],
                                         ),
                                       ],
                                     ),
