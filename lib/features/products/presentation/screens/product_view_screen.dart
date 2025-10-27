@@ -299,6 +299,29 @@ class _ProductViewScreenState extends State<ProductViewScreen> {
                                             ),
                                           ],
                                         ),
+
+                                        if (product.img?.isNotEmpty == true)
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                              bottom: 12,
+                                            ),
+                                            child: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              child: Image.network(
+                                                product
+                                                    .img!, // ya no es null por la condición de arriba
+                                                height: 150,
+                                                width: double.infinity,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (_, __, ___) =>
+                                                    const Icon(
+                                                      Icons.broken_image,
+                                                    ),
+                                              ),
+                                            ),
+                                          ),
+
                                         const SizedBox(height: 8),
                                         Row(
                                           mainAxisAlignment:
