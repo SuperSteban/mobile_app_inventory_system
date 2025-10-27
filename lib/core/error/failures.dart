@@ -1,20 +1,41 @@
-import 'package:flutter/cupertino.dart';
+import 'package:equatable/equatable.dart';
 
-abstract class Failure {
+abstract class Failure extends Equatable {
   final String message;
   const Failure([this.message = 'Ocurrió un error inesperado.']);
+
+  @override
+  List<Object> get props => [message];
 }
 
 abstract class AuthFailure extends Failure {
-  const AuthFailure([super.message]);
+  const AuthFailure([super.message = '']);
 }
 
-
-abstract class ServerFailure extends Failure {}
+class ServerFailure extends Failure {
+  const ServerFailure([super.message = 'Error de comunicación con el servidor.']);
+}
 
 class InvalidCredentialsFailure extends AuthFailure {
-  const InvalidCredentialsFailure({String message = "Credenciales inválidas. Verifica tu correo y contraseña."}): super(message);
+  const InvalidCredentialsFailure([
+    super.message = "Credenciales inválidas. Verifica tu correo y contraseña."
+  ]);
 }
+
 class UserNotFoundFailure extends AuthFailure {
-  const UserNotFoundFailure({String message = "Usuario no existe"}) : super(message);
+  const UserNotFoundFailure([
+    super.message = "El usuario no existe."
+  ]);
+}
+
+class SignOutFailure extends AuthFailure {
+  const SignOutFailure([
+    super.message = "No es posible cerrar sesión. Inténtelo más tarde."
+  ]);
+}
+
+class NeedRecentLoginFailure extends AuthFailure {
+  const NeedRecentLoginFailure([
+    super.message = "Se necesita, volver iniciar session."
+  ]);
 }
