@@ -1,4 +1,6 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
 
@@ -16,11 +18,26 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
   String _selectedCategory = 'general';
+  File? _selectedImage;
 
   @override
   void initState() {
     super.initState();
     Provider.of<ProductProvider>(context, listen: false).fetchProducts();
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(
+      source: ImageSource.gallery, // Usa ImageSource.camera si prefieres
+      maxWidth: 600,
+    );
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImage = File(pickedFile.path);
+      });
+    }
   }
 
   void _submitProduct() async {
@@ -42,7 +59,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       price: price,
       category: _selectedCategory,
       createdAt: DateTime.now(),
-      img: null, // Imagen nula por ahora
+      img: _selectedImage?.path, // Guarda la ruta local de la imagen
     );
 
     await Provider.of<ProductProvider>(
@@ -52,7 +69,10 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
 
     _nameController.clear();
     _priceController.clear();
-    setState(() => _selectedCategory = 'general');
+    setState(() {
+      _selectedCategory = 'general';
+      _selectedImage = null;
+    });
   }
 
   @override
@@ -97,6 +117,20 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     },
                   ),
                   const SizedBox(height: 10),
+                  TextButton.icon(
+                    onPressed: _pickImage,
+                    icon: const Icon(Icons.image),
+                    label: const Text('Seleccionar imagen'),
+                  ),
+                  if (_selectedImage != null)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Image.file(
+                        _selectedImage!,
+                        height: 150,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
                   ElevatedButton(
                     onPressed: _submitProduct,
                     child: const Text('Agregar producto'),
