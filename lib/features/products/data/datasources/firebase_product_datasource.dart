@@ -5,30 +5,25 @@ class FirebaseProductDatasource {
   final _collection = FirebaseFirestore.instance.collection('products');
 
   Future<void> addProduct(Product product) async {
-    await _collection.doc(product.id).set({
-      'id': product.id,
-      'name': product.name,
-      'price': product.price,
-      'category': product.category,
-      'img': product.img,
-      'createdAt': product.createdAt.toIso8601String(),
-    });
+    await _collection.doc(product.id).set(product.toMap());
   }
 
   Future<List<Product>> getProducts() async {
     final snapshot = await _collection
         .orderBy('createdAt', descending: true)
         .get();
+
     return snapshot.docs.map((doc) {
-      final data = doc.data();
-      return Product(
-        id: data['id'],
-        name: data['name'],
-        price: (data['price'] as num).toDouble(),
-        category: data['category'],
-        img: data['img'],
-        createdAt: DateTime.parse(data['createdAt']),
-      );
+      return Product.fromMap(doc.id, doc.data());
     }).toList();
+  }
+
+  //que no haya duplicados en codigo de barras
+  Future<bool> existsCodeProduct(String codeProduct) async {
+    final snapshot = await _collection
+        .where('codeProduct', isEqualTo: codeProduct)
+        .limit(1)
+        .get();
+    return snapshot.docs.isNotEmpty;
   }
 }

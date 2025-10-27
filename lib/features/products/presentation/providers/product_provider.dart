@@ -2,14 +2,17 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/product.dart';
 import '../../domain/use_cases/add_product_case.dart';
 import '../../domain/use_cases/get_products_case.dart';
+import '../../domain/repositories/product_repository.dart';
 
-class ProductProvider extends ChangeNotifier {
+class ProductProvider with ChangeNotifier {
   final AddProductCase addProductCase;
   final GetProductsCase getProductsCase;
+  final ProductRepository repository;
 
   ProductProvider({
     required this.addProductCase,
     required this.getProductsCase,
+    required this.repository,
   });
 
   List<Product> _products = [];
@@ -20,32 +23,26 @@ class ProductProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
   String? get error => _error;
 
-  Future<void> addProduct(Product product) async {
-    _setLoading(true);
-    try {
-      await addProductCase(product);
-      _products.add(product); // opcional: reflejarlo localmente
-      _error = null;
-    } catch (e) {
-      _error = e.toString();
-    }
-    _setLoading(false);
+  Future<void> createProduct(Product product) async {
+    await addProductCase(product);
+    _products.add(product);
+    notifyListeners();
   }
 
   Future<void> fetchProducts() async {
-    _setLoading(true);
+    _isLoading = true;
+    notifyListeners();
     try {
-      final result = await getProductsCase();
-      _products = result;
+      _products = await getProductsCase();
       _error = null;
     } catch (e) {
       _error = e.toString();
     }
-    _setLoading(false);
+    _isLoading = false;
+    notifyListeners();
   }
 
-  void _setLoading(bool value) {
-    _isLoading = value;
-    notifyListeners();
+  Future<bool> isDuplicateCode(String codeProduct) async {
+    return await repository.existsCodeProduct(codeProduct);
   }
 }

@@ -17,6 +17,11 @@ class ProductFormScreen extends StatefulWidget {
 class _ProductFormScreenState extends State<ProductFormScreen> {
   final _nameController = TextEditingController();
   final _priceController = TextEditingController();
+  final _stockController = TextEditingController();
+  final _minStockController = TextEditingController();
+  final _storageLocationController = TextEditingController();
+  final _codeProductController = TextEditingController();
+
   String _selectedCategory = 'general';
   File? _selectedImage;
 
@@ -29,7 +34,7 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
   Future<void> _pickImage() async {
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(
-      source: ImageSource.gallery, // Usa ImageSource.camera si prefieres
+      source: ImageSource.gallery,
       maxWidth: 600,
     );
 
@@ -40,14 +45,32 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
     }
   }
 
-  void _submitProduct() async {
+  Future<void> _submitProduct() async {
     final name = _nameController.text.trim();
     final price = double.tryParse(_priceController.text.trim()) ?? 0;
+    final stock = double.tryParse(_stockController.text.trim()) ?? 0;
+    final minStock = double.tryParse(_minStockController.text.trim()) ?? 0;
+    final storageLocation = _storageLocationController.text.trim();
+    final codeProduct = _codeProductController.text.trim();
 
-    if (name.isEmpty || price <= 0) {
+    if (name.isEmpty || price <= 0 || codeProduct.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Por favor ingresa nombre y precio válidos'),
+          content: Text('Completa nombre, precio y código de barras'),
+        ),
+      );
+      return;
+    }
+
+    final isDuplicate = await Provider.of<ProductProvider>(
+      context,
+      listen: false,
+    ).isDuplicateCode(codeProduct);
+
+    if (isDuplicate) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Ya existe un producto con ese código de barras'),
         ),
       );
       return;
@@ -58,17 +81,27 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
       name: name,
       price: price,
       category: _selectedCategory,
+      img: _selectedImage?.path,
+      stock: stock,
+      minStock: minStock,
+      storageLocation: storageLocation.isEmpty ? null : storageLocation,
+      codeProduct: codeProduct,
       createdAt: DateTime.now(),
-      img: _selectedImage?.path, // Guarda la ruta local de la imagen
+      updatedAt: null,
     );
 
     await Provider.of<ProductProvider>(
       context,
       listen: false,
-    ).addProduct(product);
+    ).createProduct(product);
 
     _nameController.clear();
     _priceController.clear();
+    _stockController.clear();
+    _minStockController.clear();
+    _storageLocationController.clear();
+    _codeProductController.clear();
+
     setState(() {
       _selectedCategory = 'general';
       _selectedImage = null;
@@ -102,6 +135,30 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                     controller: _priceController,
                     decoration: const InputDecoration(labelText: 'Precio'),
                     keyboardType: TextInputType.number,
+                  ),
+                  TextField(
+                    controller: _stockController,
+                    decoration: const InputDecoration(labelText: 'Stock'),
+                    keyboardType: TextInputType.number,
+                  ),
+                  TextField(
+                    controller: _minStockController,
+                    decoration: const InputDecoration(
+                      labelText: 'Stock mínimo',
+                    ),
+                    keyboardType: TextInputType.number,
+                  ),
+                  TextField(
+                    controller: _storageLocationController,
+                    decoration: const InputDecoration(
+                      labelText: 'Ubicación de almacenamiento',
+                    ),
+                  ),
+                  TextField(
+                    controller: _codeProductController,
+                    decoration: const InputDecoration(
+                      labelText: 'Código de barras',
+                    ),
                   ),
                   DropdownButton<String>(
                     value: _selectedCategory,
@@ -150,10 +207,27 @@ class _ProductFormScreenState extends State<ProductFormScreen> {
                                 subtitle: Text(
                                   '${product.category} - \$${product.price.toStringAsFixed(2)}',
                                 ),
-                                trailing: Text(
-                                  product.createdAt.toLocal().toString().split(
-                                    ' ',
-                                  )[0],
+                                trailing: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      product.createdAt
+                                          .toLocal()
+                                          .toString()
+                                          .split(' ')[0],
+                                    ),
+                                    if (product.isOutOfStock)
+                                      const Text(
+                                        'Agotado',
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    if (!product.isOutOfStock &&
+                                        product.isLowStock)
+                                      const Text(
+                                        'Stock bajo',
+                                        style: TextStyle(color: Colors.orange),
+                                      ),
+                                  ],
                                 ),
                               );
                             },

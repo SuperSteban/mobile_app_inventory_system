@@ -27,18 +27,24 @@ void main() async {
   final getProductsCase = GetProductsCase(productRepository);
 
   runApp(
-    MyApp(addProductCase: addProductCase, getProductsCase: getProductsCase),
+    MyApp(
+      addProductCase: addProductCase,
+      getProductsCase: getProductsCase,
+      productRepository: productRepository,
+    ),
   );
 }
 
 class MyApp extends StatelessWidget {
   final AddProductCase addProductCase;
   final GetProductsCase getProductsCase;
+  final ProductRepositoryImpl productRepository;
 
   const MyApp({
     super.key,
     required this.addProductCase,
     required this.getProductsCase,
+    required this.productRepository,
   });
 
   @override
@@ -49,6 +55,7 @@ class MyApp extends StatelessWidget {
           create: (_) => ProductProvider(
             addProductCase: addProductCase,
             getProductsCase: getProductsCase,
+            repository: productRepository,
           ),
         ),
       ],
@@ -59,7 +66,8 @@ class MyApp extends StatelessWidget {
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
           useMaterial3: true,
         ),
-        home: const ProductFormScreen(),
+        home:
+            const ProductFormScreen(), // 👈 Ejecuta esta pantalla para pruebas
       ),
     );
   }

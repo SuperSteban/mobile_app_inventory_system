@@ -8,12 +8,17 @@ class ProductRepositoryImpl implements ProductRepository {
   ProductRepositoryImpl(this.datasource);
 
   @override
-  Future<void> addProduct(Product product) async {
-    await datasource.addProduct(product);
+  Future<void> addProduct(Product product) {
+    return datasource.addProduct(product);
   }
 
   @override
-  Future<List<Product>> getProducts() async {
-    return await datasource.getProducts();
+  Future<List<Product>> getProducts() {
+    return datasource.getProducts();
+  }
+
+  @override
+  Future<bool> existsCodeProduct(String codeProduct) {
+    return datasource.existsCodeProduct(codeProduct);
   }
 }
