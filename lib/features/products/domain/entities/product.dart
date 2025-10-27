@@ -10,6 +10,7 @@ class Product {
   final double minStock;
   final String? storageLocation;
   final String codeProduct; //codigo de barras
+  final String unit; // unidad de medida (kg, pieza, caja, LTS, gr)
   final DateTime createdAt;
   final DateTime? updatedAt;
 
@@ -25,6 +26,7 @@ class Product {
     required this.codeProduct,
     required this.createdAt,
     this.updatedAt,
+    required this.unit,
   });
 
   Map<String, dynamic> toMap() {
@@ -39,6 +41,7 @@ class Product {
       'codeProduct': codeProduct,
       'createdAt': createdAt,
       'updatedAt': updatedAt ?? DateTime.now(),
+      'unit': unit,
     };
   }
 
@@ -64,6 +67,7 @@ class Product {
       updatedAt: map['updatedAt'] is Timestamp
           ? (map['updatedAt'] as Timestamp).toDate()
           : null,
+      unit: map['unit'] ?? 'pieza',
     );
   }
   //metodo para copiar con cambios
@@ -92,6 +96,7 @@ class Product {
       codeProduct: codeProduct ?? this.codeProduct,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
+      unit: unit,
     );
   }
 }
