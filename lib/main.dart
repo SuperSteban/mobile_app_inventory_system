@@ -1,74 +1,33 @@
-import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:provider/provider.dart';
-
+import 'package:flutter/material.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'firebase_options.dart';
-
-// DataSource y repositorio
-import 'features/products/data/datasources/firebase_product_datasource.dart';
-import 'features/products/data/repositories/product_repository_impl.dart';
-
-// Casos de uso
-import 'features/products/domain/use_cases/add_product_case.dart';
-import 'features/products/domain/use_cases/get_products_case.dart';
-
-// Provider y pantalla
-import 'features/products/presentation/providers/product_provider.dart';
-import 'features/products/presentation/screens/product_form_screen.dart';
+import 'features/auth/presentation/pages/sign_in_screen.dart';
 
 void main() async {
+  // 1. Inicialización de Flutter
   WidgetsFlutterBinding.ensureInitialized();
+
+  // 2. Inicialización de Firebase
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
 
-  // 🔧 Inyección manual de dependencias
-  final datasource = FirebaseProductDatasource();
-  final productRepository = ProductRepositoryImpl(datasource);
-  final addProductCase = AddProductCase(productRepository);
-  final getProductsCase = GetProductsCase(productRepository);
+  // 3. Inicialización de la Inyección de Dependencias (Get_it)
+  setupDependencies();
 
-  runApp(
-    MyApp(
-      addProductCase: addProductCase,
-      getProductsCase: getProductsCase,
-      productRepository: productRepository,
-    ),
-  );
+  // 4. Ejecutar la aplicación
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
-  final AddProductCase addProductCase;
-  final GetProductsCase getProductsCase;
-  final ProductRepositoryImpl productRepository;
-
-  const MyApp({
-    super.key,
-    required this.addProductCase,
-    required this.getProductsCase,
-    required this.productRepository,
-  });
+  const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: [
-        ChangeNotifierProvider(
-          create: (_) => ProductProvider(
-            addProductCase: addProductCase,
-            getProductsCase: getProductsCase,
-            repository: productRepository,
-          ),
-        ),
-      ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: 'Inventario de Productos',
-        theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.teal),
-          useMaterial3: true,
-        ),
-        home:
-            const ProductFormScreen(), // 👈 Ejecuta esta pantalla para pruebas
-      ),
+    return MaterialApp(
+      title: 'Inventory System UTH',
+      theme: ThemeData(primarySwatch: Colors.green),
+      // CRÍTICO: Usamos el Wrapper para manejar la lógica de sesión/splash
+      home: const AuthFlowWrapper(),
     );
   }
 }
