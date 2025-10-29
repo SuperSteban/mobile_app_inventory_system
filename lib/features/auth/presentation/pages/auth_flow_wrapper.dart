@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import '../../domain/entities/user.dart';
 import '../pages/sign_in_screen.dart';
-import '../provider/sign_in_provider.dart'; // Tu pantalla de Login
-// import 'home_screen.dart'; // Asume que tendrás una pantalla principal
+import '../provider/sign_in_provider.dart';
+
 
 
 class AuthFlowWrapper extends ConsumerWidget {
@@ -10,23 +11,34 @@ class AuthFlowWrapper extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    // Escucha el estado actual de autenticación
+    // 1. Escuchar el estado actual
     final authState = ref.watch(authNotifierProvider);
 
-    // Usa 'when' de Freezed para manejar todos los estados
-    return authState.when(
-      initial: () => const Center(child: Text('Cargando sesión...')), // Splash Screen temporal
-      loading: () => const Center(child: CircularProgressIndicator()),
+    // --- Lógica de Decisión Sin Freezed ---
 
-      // Si hay un usuario logueado, redirige a la app principal
-      success: (user) {
-        // Redirige al Home si el login es exitoso
-        // En un proyecto real, esto sería 'const HomeScreen()'
-        return const Center(child: Text('Autenticado. Bienvenido!'));
-      },
+    // 2. Estado de Carga (Loading / Splash Screen)
+    if (authState.isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
 
-      // Si hay error o no hay sesión, muestra la pantalla de login
-      error: (message) => const SignInScreen(),
-    );
+    // 3. Estado de Éxito (Autenticado)
+    // Evaluamos si la propiedad 'user' NO es null
+    if (authState.user != null) {
+      // Si el usuario existe, se asume que es la HomeScreen.
+      final user = authState.user!; // Obtenemos la entidad garantizada
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text('Autenticado. Bienvenido, ${user.email}!'),
+            const Text('Esta es la HomeScreen.'),
+          ],
+        ),
+      );
+    }
+
+    // 4. Estado Inicial / Error / Desconectado
+    // Si no está cargando y 'user' es null, mostramos la pantalla de inicio de sesión.
+    return const SignInScreen();
   }
 }

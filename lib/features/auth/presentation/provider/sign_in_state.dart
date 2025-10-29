@@ -1,16 +1,38 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-// Importa la Entidad Pura de Dominio (Asumo que esta es la ruta correcta)
-import '../../../domain/entities/user.dart';
+import 'package:equatable/equatable.dart';
+import '../../../../core/error/failures.dart';
+import '../../domain/entities/user.dart';
 
-part 'sign_in_state.freezed.dart';
+// El estado ahora es una clase inmutable tradicional con Equatable.
+class AuthState extends Equatable {
+  // CRÍTICO: Estas propiedades son accesibles directamente por los widgets
+  final UserEntity? user;
+  final bool isLoading;
+  final Failure? error;
 
-@freezed
-class SignInState with _$SignInState {
-  const factory SignInState.initial() = _Initial;
-  const factory SignInState.loading() = _Loading;
+  const AuthState({
+    this.user,
+    this.isLoading = false,
+    this.error,
+  });
 
-  // Usar UserEntity de tu Dominio.
-  const factory SignInState.success(UserEntity user) = _Success;
+  // Estado inicial (desconectado)
+  factory AuthState.initial() => const AuthState(user: null, isLoading: false, error: null);
 
-  const factory SignInState.error(String message) = _Error;
+  // Método esencial para la inmutabilidad: crea una nueva instancia con los valores modificados
+  AuthState copyWith({
+    UserEntity? user,
+    bool? isLoading,
+    Failure? error,
+    bool clearUser = false,
+    bool clearError = false,
+  }) {
+    return AuthState(
+      user: clearUser ? null : user ?? this.user,
+      isLoading: isLoading ?? this.isLoading,
+      error: clearError ? null : error ?? this.error,
+    );
+  }
+
+  @override
+  List<Object?> get props => [user, isLoading, error];
 }
