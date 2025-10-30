@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import '../provider/sign_in_provider.dart'; // Contiene authNotifierProvider (Asumo que renombraste)
+import '../provider/sign_in_provider.dart';
 import '../widgets/login_form.dart';
-import '../provider/sign_in_state.dart'; // Importa la clase de estado inmutable (AuthState)
+import '../provider/sign_in_state.dart';
 
 
 class SignInScreen extends ConsumerWidget {
@@ -11,30 +11,30 @@ class SignInScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
 
-    // 1. Escuchar el Provider. Se tipa con el estado inmutable: AuthState.
+    // 1. Escuchar el Provider para efectos secundarios (navegación, SnackBar)
     ref.listen<AuthState>(authNotifierProvider, (previous, next) {
 
-      // --- Lógica de Manejo de Side Effects (Sin .when) ---
-
-      // MANEJO DE ERRORES: Si existe un nuevo error, lo mostramos.
+      // MANEJO DE ERRORES
       if (next.error != null && next.error != previous?.error) {
-        // Muestra el mensaje de la Failure (el mensaje viene de la propiedad del estado)
+        ScaffoldMessenger.of(context)
+            .hideCurrentSnackBar();
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text(next.error!.message)),
         );
+
       }
 
-      // MANEJO DE NAVEGACIÓN (ÉXITO): Si el usuario anterior era null y el nuevo NO lo es.
+      // MANEJO DE NAVEGACIÓN (ÉXITO)
       if (previous?.user == null && next.user != null) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text('¡Bienvenido! Redirigiendo a Inventario...'),
+          content: Text('¡Bienvenido! Redirigiendo...'),
         ));
-        // Aquí iría la navegación a la HomeScreen
+        // Ejemplo de navegación:
         // Navigator.of(context).pushReplacementNamed('/inventory');
       }
     });
 
-    // 2. Observar el estado completo para actualizar la UI
+    // 2. Observar el estado para actualizar la UI
     final authState = ref.watch(authNotifierProvider);
 
     return Scaffold(
@@ -45,8 +45,7 @@ class SignInScreen extends ConsumerWidget {
           children: [
             const LoginForm(),
 
-            // 3. Mostrar indicador de carga
-            // CRÍTICO: Accedemos directamente a la propiedad 'isLoading'
+            // 3. Mostrar indicador de carga global
             if (authState.isLoading)
               Container(
                 color: Colors.black54,

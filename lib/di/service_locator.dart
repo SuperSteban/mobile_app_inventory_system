@@ -10,6 +10,7 @@ import '../features/auth/domain/use_cases/check_auth_status_case.dart';
 // 2. Data (Implementaciones)
 import '../features/auth/data/data_sources/auth_remote_data_source.dart';
 import '../features/auth/data/repositories/auth_repository.dart';
+import '../features/auth/domain/use_cases/sign_out_case.dart';
 
 final sl = GetIt.instance; // Instancia global de GetIt
 
@@ -41,4 +42,5 @@ void setupDependencies() {
   // Registramos los Use Cases para que el Notifier pueda accederlos
   sl.registerFactory(() => SignInUseCase(sl()));
   sl.registerFactory(() => CheckAuthStatusUseCase(sl()));
+  sl.registerFactory(() => SignOutUseCase(sl()));
 }
