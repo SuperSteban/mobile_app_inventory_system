@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_app_inventory_system/features/products/presentation/screens/product_edit_screen.dart';
 import 'package:provider/provider.dart';
+
 import '../providers/product_provider.dart';
 
 class ProductViewScreen extends StatefulWidget {
@@ -309,8 +310,8 @@ class _ProductViewScreenState extends State<ProductViewScreen> {
                                               borderRadius:
                                                   BorderRadius.circular(8),
                                               child: Image.network(
-                                                product
-                                                    .img!, // ya no es null por la condición de arriba
+                                                product.img!,
+                                                // ya no es null por la condición de arriba
                                                 height: 150,
                                                 width: double.infinity,
                                                 fit: BoxFit.cover,

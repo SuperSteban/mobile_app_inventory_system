@@ -4,13 +4,13 @@ import 'package:firebase_auth/firebase_auth.dart';
 // --- Imports de Features ---
 // 1. Domain (Contratos y Use Cases)
 import '../features/auth/domain/repositories/auth_repository.dart';
-import '../features/auth/domain/usecases/sign_in.dart';
-import '../features/auth/domain/usecases/sign_up.dart';
-import '../features/auth/domain/usecases/check_auth_status.dart';
+import '../features/auth/domain/use_cases/sign_in_case.dart';
+import '../features/auth/domain/use_cases/check_auth_status_case.dart';
 
 // 2. Data (Implementaciones)
-import '../features/auth/data/datasources/auth_remote_data_source.dart';
-import '../features/auth/data/repositories/auth_repository_impl.dart';
+import '../features/auth/data/data_sources/auth_remote_data_source.dart';
+import '../features/auth/data/repositories/auth_repository.dart';
+import '../features/auth/domain/use_cases/sign_out_case.dart';
 
 final sl = GetIt.instance; // Instancia global de GetIt
 
@@ -41,6 +41,6 @@ void setupDependencies() {
 
   // Registramos los Use Cases para que el Notifier pueda accederlos
   sl.registerFactory(() => SignInUseCase(sl()));
-  sl.registerFactory(() => SignUpUseCase(sl()));
   sl.registerFactory(() => CheckAuthStatusUseCase(sl()));
+  sl.registerFactory(() => SignOutUseCase(sl()));
 }

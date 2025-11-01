@@ -1,24 +1,27 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:get_it/get_it.dart';
-import '../provider/sign_in_notifier.dart';
-import '../provider/sign_in_state.dart';
 
-// Importar los Use Cases
-import '../../../domain/usecases/sign_in.dart';
-import '../../../domain/usecases/sign_up.dart';
-import '../../../domain/usecases/check_auth_status.dart';
+// --- Importaciones de la Capa de Lógica y Estado ---
+import 'sign_in_notifier.dart';
+import 'sign_in_state.dart';
 
+// --- Importaciones de la Capa de Dominio (Use Cases) ---
+import '../../domain/use_cases/sign_in_case.dart';
+import '../../domain/use_cases/check_auth_status_case.dart';
+import '../../domain/use_cases/sign_out_case.dart';
 
-final sl = GetIt.instance; // Instancia global de GetIt
+final sl = GetIt.instance;
 
+// StateNotifierProvider simplificado
 
-final authNotifierProvider = StateNotifierProvider<AuthNotifier, SignInState>(
+final authNotifierProvider = StateNotifierProvider<AuthNotifier, AuthState>(
       (ref) {
-    // Inyección de Dependencias de los Use Cases vía GetIt
     return AuthNotifier(
       signIn: sl<SignInUseCase>(),
-      signUp: sl<SignUpUseCase>(),
       checkStatus: sl<CheckAuthStatusUseCase>(),
+      signOut: sl<SignOutUseCase>(),
     );
   },
 );
+
+final signInUseCaseProvider = Provider<SignInUseCase>((ref) => sl<SignInUseCase>());

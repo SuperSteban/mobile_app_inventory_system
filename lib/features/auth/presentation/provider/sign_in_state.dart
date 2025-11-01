@@ -1,16 +1,34 @@
-import 'package:freezed_annotation/freezed_annotation.dart';
-// Importa la Entidad Pura de Dominio (Asumo que esta es la ruta correcta)
-import '../../../domain/entities/user.dart';
+import 'package:equatable/equatable.dart';
+import '../../../../core/error/failures.dart';
+import '../../domain/entities/user.dart';
 
-part 'sign_in_state.freezed.dart';
+class AuthState extends Equatable {
+  final UserEntity? user;
+  final bool isLoading;
+  final Failure? error;
 
-@freezed
-class SignInState with _$SignInState {
-  const factory SignInState.initial() = _Initial;
-  const factory SignInState.loading() = _Loading;
+  const AuthState({
+    this.user,
+    this.isLoading = false,
+    this.error,
+  });
 
-  // Usar UserEntity de tu Dominio.
-  const factory SignInState.success(UserEntity user) = _Success;
+  factory AuthState.initial() => const AuthState(user: null, isLoading: false, error: null);
 
-  const factory SignInState.error(String message) = _Error;
+  AuthState copyWith({
+    UserEntity? user,
+    bool? isLoading,
+    Failure? error,
+    bool clearUser = false,
+    bool clearError = false,
+  }) {
+    return AuthState(
+      user: clearUser ? null : user ?? this.user,
+      isLoading: isLoading ?? this.isLoading,
+      error: clearError ? null : error ?? this.error,
+    );
+  }
+
+  @override
+  List<Object?> get props => [user, isLoading, error];
 }
