@@ -81,7 +81,7 @@ class HomeScreen extends StatelessWidget {
           const SizedBox(height: 20),
           ElevatedButton.icon(
             onPressed: () {
-              print("Botón Comenzar presionado");
+              debugPrint('Usuario logueado');
             },
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.white,
@@ -165,7 +165,7 @@ class HomeScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10)),
                 child: ListTile(
                   onTap: () {
-                    print("Acción rápida: ${action.title}");
+                    debugPrint("Acción rápida: ${action.title}");
                   },
                   leading: Container(
                     width: 48,
@@ -209,7 +209,7 @@ class HomeScreen extends StatelessWidget {
                     borderRadius: BorderRadius.circular(10)),
                 child: ListTile(
                   onTap: () {
-                    print("Actividad: ${activity.title}");
+                    debugPrint("Actividad: ${activity.title}");
                   },
                   leading: Container(
                     width: 8,

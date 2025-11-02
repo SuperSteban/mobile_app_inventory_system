@@ -2,22 +2,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:mobile_app_inventory_system/features/home/presentation/screens/home_screen.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(),
-    );
-  }
-}
-
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
 
@@ -34,6 +18,7 @@ class _SplashScreenState extends State<SplashScreen>
   void initState() {
     super.initState();
 
+    // Animación de aparición del logo y texto
     _controller = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -46,6 +31,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
+    // Ir al Home después de 3 segundos
     Timer(const Duration(seconds: 3), () {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (_) => const HomeScreen()),
