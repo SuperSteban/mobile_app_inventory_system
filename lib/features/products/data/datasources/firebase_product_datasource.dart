@@ -5,7 +5,7 @@ class FirebaseProductDatasource {
   final _collection = FirebaseFirestore.instance.collection('products');
 
   Future<void> addProduct(Product product) async {
-    await _collection.doc(product.id).set(product.toMap());
+    await _collection.doc(product.id).set(product.toJson());
   }
 
   Future<List<Product>> getProducts() async {
@@ -14,7 +14,7 @@ class FirebaseProductDatasource {
         .get();
 
     return snapshot.docs.map((doc) {
-      return Product.fromMap(doc.id, doc.data());
+      return Product.fromJson(doc.id, doc.data());
     }).toList();
   }
 
