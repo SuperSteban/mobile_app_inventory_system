@@ -9,8 +9,8 @@ class Product {
   final double stock;
   final double minStock;
   final String? storageLocation;
-  final String codeProduct; //codigo de barras
-  final String unit; // unidad de medida (kg, pieza, caja, LTS, gr)
+  final String codeProduct;
+  final String unit;
   final DateTime createdAt;
   final DateTime? updatedAt;
 
@@ -19,58 +19,64 @@ class Product {
     required this.name,
     required this.price,
     required this.category,
-    required this.img,
+    this.img,
     required this.stock,
     required this.minStock,
     this.storageLocation,
     required this.codeProduct,
+    required this.unit,
     required this.createdAt,
     this.updatedAt,
-    required this.unit,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'price': price,
-      'category': category,
-      'img': img,
-      'stock': stock,
-      'minStock': minStock,
-      'storageLocation': storageLocation,
-      'codeProduct': codeProduct,
-      'createdAt': createdAt,
-      'updatedAt': updatedAt ?? DateTime.now(),
-      'unit': unit,
-    };
-  }
-
-  //verificar si el stock es bajo
-  bool get isLowStock => stock <= minStock;
-  //verificar si esta agotado
+  // Stock helpers
   bool get isOutOfStock => stock <= 0;
+  bool get isLowStock => stock > 0 && stock <= minStock;
 
-  factory Product.fromMap(String id, Map<String, dynamic> map) {
+  // toJson: Usa FieldValue.serverTimestamp() para updatedAt
+  Map<String, dynamic> toJson() => {
+    'name': name,
+    'price': price,
+    'category': category,
+    'img': img,
+    'stock': stock,
+    'minStock': minStock,
+    'storageLocation': storageLocation,
+    'codeProduct': codeProduct,
+    'unit': unit,
+    'createdAt': createdAt,
+    'updatedAt': updatedAt != null
+        ? Timestamp.fromDate(updatedAt!)
+        : FieldValue.serverTimestamp(),
+  };
+
+  // fromJson: Manejo seguro de tipos
+  factory Product.fromJson(String id, Map<String, dynamic> json) {
     return Product(
       id: id,
-      name: map['name'] ?? '',
-      price: (map['price'] ?? 0).toDouble(),
-      category: map['category'] ?? '',
-      img: map['img'],
-      stock: map['stock'] ?? 0,
-      minStock: map['minStock'] ?? 0,
-      codeProduct: map['codeProduct'] ?? '',
-      storageLocation: map['storageLocation'] ?? '',
-      createdAt: map['createdAt'] is Timestamp
-          ? (map['createdAt'] as Timestamp).toDate()
-          : DateTime.now(),
-      updatedAt: map['updatedAt'] is Timestamp
-          ? (map['updatedAt'] as Timestamp).toDate()
-          : null,
-      unit: map['unit'] ?? 'pieza',
+      name: json['name'] as String? ?? '',
+      price: (json['price'] as num?)?.toDouble() ?? 0.0,
+      category: json['category'] as String? ?? 'general',
+      img: json['img'] as String?,
+      stock: (json['stock'] as num?)?.toDouble() ?? 0.0,
+      minStock: (json['minStock'] as num?)?.toDouble() ?? 0.0,
+      storageLocation: json['storageLocation'] as String?,
+      codeProduct: json['codeProduct'] as String? ?? '',
+      unit: json['unit'] as String? ?? 'pieza',
+      createdAt: _parseTimestamp(json['createdAt']) ?? DateTime.now(),
+      updatedAt: _parseTimestamp(json['updatedAt']),
     );
   }
-  //metodo para copiar con cambios
+
+  // Helper para parsear Timestamp
+  static DateTime? _parseTimestamp(dynamic value) {
+    if (value == null) return null;
+    if (value is Timestamp) return value.toDate();
+    if (value is String) return DateTime.tryParse(value);
+    return null;
+  }
+
+  // EL MÉTODO QUE TE FALTABA: copyWith
   Product copyWith({
     String? id,
     String? name,
@@ -81,9 +87,9 @@ class Product {
     double? minStock,
     String? storageLocation,
     String? codeProduct,
+    String? unit,
     DateTime? createdAt,
     DateTime? updatedAt,
-    String? unit,
   }) {
     return Product(
       id: id ?? this.id,
@@ -95,9 +101,19 @@ class Product {
       minStock: minStock ?? this.minStock,
       storageLocation: storageLocation ?? this.storageLocation,
       codeProduct: codeProduct ?? this.codeProduct,
+      unit: unit ?? this.unit,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
-      unit: unit ?? this.unit,
     );
   }
+
+  @override
+  String toString() => 'Product(id: $id, name: $name, stock: $stock)';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is Product && other.id == id;
+
+  @override
+  int get hashCode => id.hashCode;
 }
